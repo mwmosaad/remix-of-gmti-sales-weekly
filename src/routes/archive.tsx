@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteFooter, SiteHeader } from "@/components/EditionHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { formatWeek, type EditionStats } from "@/lib/edition";
+import { seedSummary } from "@/lib/seed-edition";
 
 interface ArchiveRow {
   week_ending: string;
@@ -34,7 +35,13 @@ export const Route = createFileRoute("/archive")({
       .limit(200);
 
     if (error) throw new Error(error.message);
-    return { editions: (data ?? []) as unknown as ArchiveRow[] };
+    const rows = (data ?? []) as unknown as ArchiveRow[];
+    const withSeed = rows.some((row) => row.week_ending === seedSummary.week_ending)
+      ? rows
+      : [...rows, seedSummary as ArchiveRow].sort((a, b) =>
+          a.week_ending < b.week_ending ? 1 : -1,
+        );
+    return { editions: withSeed };
   },
   component: Archive,
 });

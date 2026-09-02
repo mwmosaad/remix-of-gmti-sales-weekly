@@ -4,6 +4,7 @@ import { EditionView } from "@/components/EditionView";
 import { SiteFooter, SiteHeader } from "@/components/EditionHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { formatWeek, type EditionPayload } from "@/lib/edition";
+import { seedEdition } from "@/lib/seed-edition";
 
 export const Route = createFileRoute("/editions/$week")({
   head: ({ params }) => ({
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/editions/$week")({
       },
     ],
   }),
-  loader: async ({ params }) => {
+  loader: async ({ params }): Promise<{ edition: EditionPayload }> => {
     const { data, error } = await supabase
       .from("editions")
       .select("week_ending, payload")
@@ -28,8 +29,9 @@ export const Route = createFileRoute("/editions/$week")({
       .maybeSingle();
 
     if (error) throw new Error(error.message);
-    if (!data) throw notFound();
-    return { edition: data.payload as unknown as EditionPayload };
+    if (data) return { edition: data.payload as unknown as EditionPayload };
+    if (params.week === seedEdition.week_ending) return { edition: seedEdition };
+    throw notFound();
   },
   component: EditionPage,
 });

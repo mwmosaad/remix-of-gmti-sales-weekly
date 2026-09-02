@@ -4,6 +4,7 @@ import { EditionView } from "@/components/EditionView";
 import { SiteFooter, SiteHeader } from "@/components/EditionHeader";
 import { supabase } from "@/integrations/supabase/client";
 import type { EditionPayload } from "@/lib/edition";
+import { seedEdition } from "@/lib/seed-edition";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -31,7 +32,9 @@ export const Route = createFileRoute("/")({
       .maybeSingle();
 
     if (error) throw new Error(error.message);
-    return { edition: (data?.payload as unknown as EditionPayload) ?? null };
+    const edition = (data?.payload as unknown as EditionPayload) ?? null;
+    if (edition) return { edition };
+    return { edition: seedEdition as EditionPayload | null };
   },
   component: Index,
 });
