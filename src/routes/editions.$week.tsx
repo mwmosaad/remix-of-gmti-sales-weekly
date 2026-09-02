@@ -37,7 +37,7 @@ export const Route = createFileRoute("/editions/$week")({
 });
 
 function EditionPage() {
-  const { edition } = Route.useLoaderData();
+  const { edition } = Route.useLoaderData() as { edition: EditionPayload };
 
   return (
     <div className="min-h-screen bg-background">
