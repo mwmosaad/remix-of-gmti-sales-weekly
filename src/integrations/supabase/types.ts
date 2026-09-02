@@ -14,7 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      editions: {
+        Row: {
+          generated_at: string
+          id: string
+          payload: Json
+          received_at: string
+          stats: Json
+          week_ending: string
+        }
+        Insert: {
+          generated_at?: string
+          id?: string
+          payload: Json
+          received_at?: string
+          stats?: Json
+          week_ending: string
+        }
+        Update: {
+          generated_at?: string
+          id?: string
+          payload?: Json
+          received_at?: string
+          stats?: Json
+          week_ending?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
