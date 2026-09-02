@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
+import { SubscribeForm } from "@/components/SubscribeForm";
+
 export function SiteHeader() {
   return (
     <header className="border-b border-border bg-paper">
