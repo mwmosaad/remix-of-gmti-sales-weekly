@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArchiveRouteImport } from './routes/archive'
+import { Route as EditionsWeekRouteImport } from './routes/editions.$week'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const ArchiveRoute = ArchiveRouteImport.update({
   path: '/archive',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EditionsWeekRoute = EditionsWeekRouteImport.update({
+  id: '/editions/$week',
+  path: '/editions/$week',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/archive': typeof ArchiveRoute
+  '/editions/$week': typeof EditionsWeekRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/archive': typeof ArchiveRoute
+  '/editions/$week': typeof EditionsWeekRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/archive': typeof ArchiveRoute
+  '/editions/$week': typeof EditionsWeekRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/archive'
+  fullPaths: '/' | '/archive' | '/editions/$week'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/archive'
-  id: '__root__' | '/' | '/archive'
+  to: '/' | '/archive' | '/editions/$week'
+  id: '__root__' | '/' | '/archive' | '/editions/$week'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ArchiveRoute: typeof ArchiveRoute
+  EditionsWeekRoute: typeof EditionsWeekRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArchiveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/editions/$week': {
+      id: '/editions/$week'
+      path: '/editions/$week'
+      fullPath: '/editions/$week'
+      preLoaderRoute: typeof EditionsWeekRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArchiveRoute: ArchiveRoute,
+  EditionsWeekRoute: EditionsWeekRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
