@@ -87,7 +87,7 @@ export function SubscribeForm() {
             <button
               type="submit"
               disabled={status === "saving"}
-              className="rounded-md bg-signal px-5 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+              className="rounded-md bg-signal px-5 py-2 text-sm font-semibold text-signal-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
             >
               {status === "saving" ? "Adding…" : "Subscribe"}
             </button>
