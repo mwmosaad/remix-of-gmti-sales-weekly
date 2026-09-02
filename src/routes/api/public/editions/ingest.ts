@@ -90,8 +90,8 @@ export const Route = createFileRoute("/api/public/editions/ingest")({
           {
             week_ending: edition.week_ending,
             generated_at: edition.generated_at,
-            stats: edition.stats,
-            payload: edition,
+            stats: edition.stats as unknown as never,
+            payload: edition as unknown as never,
             received_at: new Date().toISOString(),
           },
           { onConflict: "week_ending" },

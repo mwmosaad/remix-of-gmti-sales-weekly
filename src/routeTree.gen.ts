@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as EditionsWeekRouteImport } from './routes/editions.$week'
+import { Route as ApiPublicEditionsIngestRouteImport } from './routes/api/public/editions/ingest'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,50 @@ const EditionsWeekRoute = EditionsWeekRouteImport.update({
   path: '/editions/$week',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicEditionsIngestRoute = ApiPublicEditionsIngestRouteImport.update({
+  id: '/api/public/editions/ingest',
+  path: '/api/public/editions/ingest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/archive': typeof ArchiveRoute
   '/editions/$week': typeof EditionsWeekRoute
+  '/api/public/editions/ingest': typeof ApiPublicEditionsIngestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/archive': typeof ArchiveRoute
   '/editions/$week': typeof EditionsWeekRoute
+  '/api/public/editions/ingest': typeof ApiPublicEditionsIngestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/archive': typeof ArchiveRoute
   '/editions/$week': typeof EditionsWeekRoute
+  '/api/public/editions/ingest': typeof ApiPublicEditionsIngestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/archive' | '/editions/$week'
+  fullPaths:
+    '/' | '/archive' | '/editions/$week' | '/api/public/editions/ingest'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/archive' | '/editions/$week'
-  id: '__root__' | '/' | '/archive' | '/editions/$week'
+  to: '/' | '/archive' | '/editions/$week' | '/api/public/editions/ingest'
+  id:
+    | '__root__'
+    | '/'
+    | '/archive'
+    | '/editions/$week'
+    | '/api/public/editions/ingest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ArchiveRoute: typeof ArchiveRoute
   EditionsWeekRoute: typeof EditionsWeekRoute
+  ApiPublicEditionsIngestRoute: typeof ApiPublicEditionsIngestRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +98,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EditionsWeekRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/editions/ingest': {
+      id: '/api/public/editions/ingest'
+      path: '/api/public/editions/ingest'
+      fullPath: '/api/public/editions/ingest'
+      preLoaderRoute: typeof ApiPublicEditionsIngestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +112,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArchiveRoute: ArchiveRoute,
   EditionsWeekRoute: EditionsWeekRoute,
+  ApiPublicEditionsIngestRoute: ApiPublicEditionsIngestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
