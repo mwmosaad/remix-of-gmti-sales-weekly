@@ -32,6 +32,8 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return (
+    <>
+    <SubscribeForm />
     <footer className="mt-16 border-t border-border">
       <div className="mx-auto max-w-5xl px-5 py-8 text-xs leading-relaxed text-muted-foreground">
         <p className="label-mono mb-2">GMTI Capital · Global Motor Trade International</p>
