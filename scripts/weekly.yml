@@ -1,0 +1,59 @@
+– # Copy this file into the gmti-fleet-intel repository as .github/workflows/weekly.yml
+# It builds the edition and publishes it to the newsletter site every Monday at
+# 08:00 New York time (EST in winter, EDT in summer).
+#
+# GitHub Actions cron is UTC-only, so the job is scheduled at BOTH 12:00 UTC and
+# 13:00 UTC and the guard step below exits early on whichever run is not 08:00
+# in New York. That keeps the publish time fixed at 8am local all year round.
+name: Weekly GMTI Fleet Intelligence
+
+on:
+  schedule:
+    - cron: "0 12 * * 1" # 08:00 America/New_York during EDT
+    - cron: "0 13 * * 1" # 08:00 America/New_York during EST
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Only continue at 08:00 New York time
+        id: guard
+        run: |
+          hour=$(TZ=America/New_York date +%H)
+          if [ "${{ github.event_name }}" != "schedule" ] || [ "$hour" = "08" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Skipping: it is ${hour}:00 in New York, not 08:00."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.guard.outputs.run == 'true'
+
+      - uses: actions/setup-python@v5
+        if: steps.guard.outputs.run == 'true'
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        if: steps.guard.outputs.run == 'true'
+        run: pip install -e .
+
+      - name: Build edition
+        if: steps.guard.outputs.run == 'true'
+        run: python -m gmti_intel.cli run --outdir output
+
+      - name: Publish edition to the newsletter site
+        if: steps.guard.outputs.run == 'true'
+        env:
+          GMTI_INGEST_URL: https://project--1e2c0170-1b98-4683-bead-f4d0c1f3adc0.lovable.app/api/public/editions/ingest
+          GMTI_INGEST_TOKEN: ${{ secrets.GMTI_INGEST_TOKEN }}
+        run: python scripts/post_edition.py output/gmti-edition-*.json
+
+      - name: Upload edition artifacts
+        if: steps.guard.outputs.run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: gmti-edition
+          path: output/
