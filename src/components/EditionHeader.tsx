@@ -46,7 +46,8 @@ export function SiteFooter() {
           could not be grounded in the source text was dropped before publication.
         </p>
         <p className="mt-3">
-          Editions are rebuilt automatically each Monday from the fleet-intelligence pipeline.
+          Editions are rebuilt and published automatically every Monday at 08:00 New York time
+          (EST/EDT) from the fleet-intelligence pipeline.
         </p>
       </div>
     </footer>

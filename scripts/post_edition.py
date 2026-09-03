@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 """Publish a GMTI Fleet Intelligence edition to the newsletter site.
 
-Copy this file into the gmti-fleet-intel repository (scripts/post_edition.py)
-and add this step to .github/workflows/weekly.yml after "Build edition":
-
-    - name: Publish edition to the newsletter site
-      env:
-        GMTI_INGEST_URL: https://project--1e2c0170-1b98-4683-bead-f4d0c1f3adc0.lovable.app/api/public/editions/ingest
-        GMTI_INGEST_TOKEN: ${{ secrets.GMTI_INGEST_TOKEN }}
-      run: python scripts/post_edition.py output/gmti-edition-*.json
+Copy this file into the gmti-fleet-intel repository (scripts/post_edition.py),
+and copy scripts/weekly.yml from the site repo over
+.github/workflows/weekly.yml — it schedules the build + publish for every
+Monday at 08:00 New York time (EST/EDT) and includes this publish step.
 
 The endpoint upserts on week_ending, so re-running a week is safe.
 """
