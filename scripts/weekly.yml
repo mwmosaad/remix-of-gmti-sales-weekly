@@ -1,4 +1,4 @@
-– # Copy this file into the gmti-fleet-intel repository as .github/workflows/weekly.yml
+# Copy this file into the gmti-fleet-intel repository as .github/workflows/weekly.yml
 # It builds the edition and publishes it to the newsletter site every Monday at
 # 08:00 New York time (EST in winter, EDT in summer).
 #
