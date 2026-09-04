@@ -4,8 +4,10 @@ import {
   formatUnits,
   formatUsdM,
   formatWeek,
+  nextPublication,
   type EditionPayload,
 } from "@/lib/edition";
+
 
 function StatBlock({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
   return (
