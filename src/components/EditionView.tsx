@@ -4,8 +4,10 @@ import {
   formatUnits,
   formatUsdM,
   formatWeek,
+  nextPublication,
   type EditionPayload,
 } from "@/lib/edition";
+
 
 function StatBlock({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
   return (
@@ -37,8 +39,12 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
         Industrial project pipeline and the economics moving it, week ending{" "}
         {formatWeek(edition.week_ending)}
       </p>
+      <p className="label-mono mt-2">
+        Latest published edition · next run {nextPublication(edition.week_ending)}, 08:00 New York
+      </p>
 
       <div className="rule-heavy mt-6" />
+
 
       <div className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-5">
         <StatBlock value={String(totals.leads)} label="Leads carried" />

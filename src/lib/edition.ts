@@ -117,6 +117,21 @@ export const formatShortWeek = (iso: string) =>
     timeZone: "UTC",
   });
 
+/** The Monday 08:00 New York publication that follows a given week-ending date. */
+export const nextPublication = (weekEndingIso: string) => {
+  const base = new Date(`${weekEndingIso}T00:00:00Z`);
+  const next = new Date(base);
+  next.setUTCDate(base.getUTCDate() + ((8 - base.getUTCDay()) % 7 || 7));
+  return next.toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "2-digit",
+    month: "short",
+    timeZone: "UTC",
+  });
+};
+
+
+
 export const formatUsdM = (usdMillions: number) => {
   if (usdMillions >= 1000) return `$${(usdMillions / 1000).toFixed(1)}bn`;
   return `$${Math.round(usdMillions).toLocaleString("en-GB")}m`;
