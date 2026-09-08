@@ -117,18 +117,31 @@ export const formatShortWeek = (iso: string) =>
     timeZone: "UTC",
   });
 
+const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
 /** The Monday 08:00 New York publication that follows a given week-ending date. */
 export const nextPublication = (weekEndingIso: string) => {
   const base = new Date(`${weekEndingIso}T00:00:00Z`);
   const next = new Date(base);
   next.setUTCDate(base.getUTCDate() + ((8 - base.getUTCDay()) % 7 || 7));
-  return next.toLocaleDateString("en-GB", {
-    weekday: "long",
-    day: "2-digit",
-    month: "short",
-    timeZone: "UTC",
-  });
+  const day = String(next.getUTCDate()).padStart(2, "0");
+  return `${WEEKDAYS[next.getUTCDay()]} ${day} ${MONTHS[next.getUTCMonth()]}`;
 };
+
 
 
 
