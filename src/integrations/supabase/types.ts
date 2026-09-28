@@ -41,6 +41,51 @@ export type Database = {
         }
         Relationships: []
       }
+      ingest_log: {
+        Row: {
+          detail: string | null
+          headers: Json
+          host: string | null
+          id: string
+          leads: number | null
+          outcome: string
+          received_at: string
+          source_ip: string | null
+          status_code: number
+          token_status: string
+          user_agent: string | null
+          week_ending: string | null
+        }
+        Insert: {
+          detail?: string | null
+          headers?: Json
+          host?: string | null
+          id?: string
+          leads?: number | null
+          outcome: string
+          received_at?: string
+          source_ip?: string | null
+          status_code: number
+          token_status: string
+          user_agent?: string | null
+          week_ending?: string | null
+        }
+        Update: {
+          detail?: string | null
+          headers?: Json
+          host?: string | null
+          id?: string
+          leads?: number | null
+          outcome?: string
+          received_at?: string
+          source_ip?: string | null
+          status_code?: number
+          token_status?: string
+          user_agent?: string | null
+          week_ending?: string | null
+        }
+        Relationships: []
+      }
       subscribers: {
         Row: {
           created_at: string
