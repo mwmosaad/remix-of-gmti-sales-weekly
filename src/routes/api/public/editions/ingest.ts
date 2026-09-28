@@ -53,21 +53,63 @@ const timingSafeEqual = (a: string, b: string) => {
   return diff === 0;
 };
 
+const SECRET_HEADERS = new Set(["x-gmti-token", "authorization", "cookie", "x-lovable-identity-token"]);
+
+type LogEntry = {
+  status_code: number;
+  outcome: string;
+  detail?: string;
+  token_status: string;
+  week_ending?: string;
+  leads?: number;
+};
+
+async function logAttempt(request: Request, entry: LogEntry) {
+  try {
+    const headers: Record<string, string> = {};
+    request.headers.forEach((value, key) => {
+      headers[key] = SECRET_HEADERS.has(key.toLowerCase()) ? "[redacted]" : value.slice(0, 500);
+    });
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("ingest_log" as never).insert({
+      ...entry,
+      detail: entry.detail?.slice(0, 2000),
+      source_ip:
+        request.headers.get("cf-connecting-ip") ??
+        request.headers.get("x-forwarded-for") ??
+        request.headers.get("x-real-ip"),
+      user_agent: request.headers.get("user-agent"),
+      host: request.headers.get("host"),
+      headers,
+    } as never);
+  } catch (error) {
+    console.error("Failed to write ingest log", error);
+  }
+}
+
 export const Route = createFileRoute("/api/public/editions/ingest")({
   server: {
     handlers: {
       POST: async ({ request }) => {
         const expected = process.env["GMTI_INGEST_TOKEN"];
-        if (!expected) {
-          return json({ error: "Ingest token is not configured on the server" }, 503);
-        }
-
         const provided =
           request.headers.get("x-gmti-token") ??
           request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ??
           "";
+        const tokenStatus = !provided
+          ? "missing"
+          : !expected
+            ? "server_unset"
+            : timingSafeEqual(provided, expected)
+              ? "valid"
+              : "invalid";
 
-        if (!provided || !timingSafeEqual(provided, expected)) {
+        if (!expected) {
+          await logAttempt(request, { status_code: 503, outcome: "rejected", detail: "token not configured on server", token_status: tokenStatus });
+          return json({ error: "Ingest token is not configured on the server" }, 503);
+        }
+        if (tokenStatus !== "valid") {
+          await logAttempt(request, { status_code: 401, outcome: "rejected", detail: "unauthorized", token_status: tokenStatus });
           return json({ error: "Unauthorized" }, 401);
         }
 
@@ -75,15 +117,23 @@ export const Route = createFileRoute("/api/public/editions/ingest")({
         try {
           raw = await request.json();
         } catch {
+          await logAttempt(request, { status_code: 400, outcome: "rejected", detail: "invalid JSON body", token_status: tokenStatus });
           return json({ error: "Body must be valid JSON" }, 400);
         }
 
         const parsed = editionSchema.safeParse(raw);
         if (!parsed.success) {
+          await logAttempt(request, {
+            status_code: 400,
+            outcome: "rejected",
+            detail: `invalid payload: ${JSON.stringify(parsed.error.issues.slice(0, 5))}`,
+            token_status: tokenStatus,
+          });
           return json({ error: "Invalid edition payload", issues: parsed.error.issues }, 400);
         }
 
         const edition = parsed.data;
+        const leads = edition.regions.reduce((sum, region) => sum + region.leads.length, 0);
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
         const { error } = await supabaseAdmin.from("editions").upsert(
@@ -99,10 +149,11 @@ export const Route = createFileRoute("/api/public/editions/ingest")({
 
         if (error) {
           console.error("Failed to store edition", error);
+          await logAttempt(request, { status_code: 500, outcome: "failed", detail: `store error: ${error.message}`, token_status: tokenStatus, week_ending: edition.week_ending, leads });
           return json({ error: "Failed to store edition" }, 500);
         }
 
-        const leads = edition.regions.reduce((sum, region) => sum + region.leads.length, 0);
+        await logAttempt(request, { status_code: 200, outcome: "published", token_status: tokenStatus, week_ending: edition.week_ending, leads });
         return json({ ok: true, week_ending: edition.week_ending, regions: edition.regions.length, leads });
       },
     },
