@@ -102,9 +102,19 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
           ) : null}
 
           <div className="mt-6 space-y-4">
-            {region.leads.map((lead) => (
-              <LeadCard key={`${lead.doc_id}-${lead.project_name.slice(0, 24)}`} lead={lead} />
-            ))}
+            {(() => {
+              const docCounts = new Map<string, number>();
+              region.leads.forEach((lead) => {
+                docCounts.set(lead.doc_id, (docCounts.get(lead.doc_id) ?? 0) + 1);
+              });
+              return region.leads.map((lead) => (
+                <LeadCard
+                  key={`${lead.doc_id}-${lead.project_name.slice(0, 24)}`}
+                  lead={lead}
+                  sharesSource={(docCounts.get(lead.doc_id) ?? 1) > 1}
+                />
+              ));
+            })()}
             {region.leads.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 No grounded project events this week — macro backdrop only.

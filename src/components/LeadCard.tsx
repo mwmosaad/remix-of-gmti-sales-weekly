@@ -6,10 +6,11 @@ import {
   type Lead,
 } from "@/lib/edition";
 
-export function LeadCard({ lead }: { lead: Lead }) {
+export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSource?: boolean }) {
   const capex = formatCapex(lead.investment);
   const buyer = lead.companies.find((company) => company.role !== "financier");
   const modelled = lead.vehicle_lines.some((line) => line.basis === "modelled");
+  const counterpartyLabel = buyer?.name ?? lead.primary_company ?? "Unnamed counterparty";
 
   return (
     <article className="border border-border bg-card p-5">
@@ -26,13 +27,33 @@ export function LeadCard({ lead }: { lead: Lead }) {
         {lead.published ? <span className="label-mono">· {lead.published}</span> : null}
       </div>
 
-      <h3 className="mt-3 font-display text-base leading-snug font-semibold text-ink">
-        {lead.source_title ?? lead.project_name}
-      </h3>
-
-      {lead.source_title ? (
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{lead.project_name}</p>
-      ) : null}
+      {sharesSource ? (
+        <>
+          <h3 className="mt-3 font-display text-base leading-snug font-semibold text-ink">
+            {counterpartyLabel}
+            {capex ? ` — ${capex}` : ""}
+          </h3>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {lead.project_name}
+          </p>
+          {lead.source_title ? (
+            <p className="mt-1 label-mono text-muted-foreground">
+              From: {lead.source_title}
+            </p>
+          ) : null}
+        </>
+      ) : (
+        <>
+          <h3 className="mt-3 font-display text-base leading-snug font-semibold text-ink">
+            {lead.source_title ?? lead.project_name}
+          </h3>
+          {lead.source_title ? (
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {lead.project_name}
+            </p>
+          ) : null}
+        </>
+      )}
 
       <dl className="mt-4 grid grid-cols-2 gap-4 border-t border-border pt-4 sm:grid-cols-4">
         <div>
