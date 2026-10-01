@@ -45,6 +45,8 @@ export interface Lead {
   investment?: Investment | null;
   vehicle_lines: VehicleLine[];
   stated_vehicle_notes?: string[];
+  equipment_models?: string[];
+  offer_expires?: string | null;
   source_url?: string;
   source_id?: string;
   source_title?: string;
@@ -182,4 +184,12 @@ export const bandColor = (band?: string) => {
   if (band === "A") return "var(--band-a)";
   if (band === "B") return "var(--band-b)";
   return "var(--band-c)";
+};
+
+/** Days from today until a tender deadline (negative once passed). */
+export const daysUntil = (iso?: string | null): number | null => {
+  if (!iso) return null;
+  const end = new Date(`${iso}T23:59:59`);
+  if (Number.isNaN(end.getTime())) return null;
+  return Math.ceil((end.getTime() - Date.now()) / 86_400_000);
 };

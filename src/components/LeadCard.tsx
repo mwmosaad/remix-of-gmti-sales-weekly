@@ -1,5 +1,6 @@
 import {
   bandColor,
+  daysUntil,
   formatCapex,
   formatUnits,
   stageLabel,
@@ -11,6 +12,8 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
   const buyer = lead.companies.find((company) => company.role !== "financier");
   const modelled = lead.vehicle_lines.some((line) => line.basis === "modelled");
   const counterpartyLabel = buyer?.name ?? lead.primary_company ?? "Unnamed counterparty";
+  const daysLeft = daysUntil(lead.offer_expires);
+  const urgent = daysLeft !== null && daysLeft <= 7;
 
   return (
     <article className="border border-border bg-card p-5">
@@ -25,6 +28,20 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
         <span className="label-mono">· {lead.project_type_label ?? "Unclassified"}</span>
         <span className="label-mono">· {stageLabel(lead.stage)}</span>
         {lead.published ? <span className="label-mono">· {lead.published}</span> : null}
+        {lead.offer_expires ? (
+          <span
+            className={`ml-auto px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-widest ${
+              urgent ? "text-primary-foreground" : "border border-border text-ink"
+            }`}
+            style={urgent ? { backgroundColor: bandColor("A") } : undefined}
+          >
+            {daysLeft !== null && daysLeft < 0
+              ? `CLOSED ${lead.offer_expires}`
+              : daysLeft === 0
+                ? "CLOSES TODAY"
+                : `CLOSES ${lead.offer_expires}${daysLeft !== null ? ` · ${daysLeft}D` : ""}`}
+          </span>
+        ) : null}
       </div>
 
       {sharesSource ? (
@@ -94,6 +111,13 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
               </li>
             ))}
           </ul>
+        </div>
+      ) : null}
+
+      {lead.equipment_models && lead.equipment_models.length > 0 ? (
+        <div className="mt-4 border-t border-border pt-4">
+          <p className="label-mono mb-2">Models mentioned</p>
+          <p className="text-sm text-ink">{lead.equipment_models.join(", ")}</p>
         </div>
       ) : null}
 
