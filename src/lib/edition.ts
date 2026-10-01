@@ -46,6 +46,7 @@ export interface Lead {
   vehicle_lines: VehicleLine[];
   stated_vehicle_notes?: string[];
   equipment_models?: string[];
+  source_title_original?: string;
   offer_expires?: string | null;
   source_url?: string;
   source_id?: string;
@@ -172,7 +173,8 @@ export const editionTotals = (edition: EditionPayload) => {
     leads.reduce((sum, lead) => sum + (lead.investment?.amount_usd ?? 0), 0) / 1_000_000;
   return {
     leads: leads.length,
-    priority: leads.filter((lead) => lead.band === "A" || lead.band === "B").length,
+    // Band A now means "open tender closing within 21 days, buyer named".
+    priority: leads.filter((lead) => lead.band === "A").length,
     capexUsdM,
     unitsNow: leads.reduce((sum, lead) => sum + (lead.units_now ?? 0), 0),
     unitsNext12m: leads.reduce((sum, lead) => sum + (lead.units_next_12m ?? 0), 0),

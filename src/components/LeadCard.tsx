@@ -64,6 +64,11 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
           <h3 className="mt-3 font-display text-base leading-snug font-semibold text-ink">
             {lead.source_title ?? lead.project_name}
           </h3>
+          {lead.source_title_original ? (
+            <p className="mt-1 label-mono text-muted-foreground">
+              Original: {lead.source_title_original}
+            </p>
+          ) : null}
           {lead.source_title ? (
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               {lead.project_name}
