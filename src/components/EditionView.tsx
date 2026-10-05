@@ -39,12 +39,15 @@ function ClosingSoon({ edition }: { edition: EditionPayload }) {
                 {lead.source_title ?? lead.project_name}
                 <span className="text-muted-foreground"> · {buyer}</span>
               </span>
-              <span
-                className="max-w-[16rem] truncate select-all font-mono text-xs text-ink"
-                title={lead.contacts[0]?.email ?? ""}
-              >
-                {lead.contacts[0]?.email ?? ""}
-              </span>
+              {lead.contacts[0]?.email ? (
+                <a
+                  href={`mailto:${lead.contacts[0].email}`}
+                  className="max-w-[16rem] truncate font-mono text-xs text-signal underline underline-offset-2"
+                  title={lead.contacts[0].email}
+                >
+                  {lead.contacts[0].email}
+                </a>
+              ) : <span />}
               {lead.source_url ? (
                 <a href={lead.source_url} target="_blank" rel="noreferrer" className="label-mono text-signal">
                   Source ↗
