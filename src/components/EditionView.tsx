@@ -22,32 +22,28 @@ function ClosingSoon({ edition }: { edition: EditionPayload }) {
       <h2 className="font-display text-xl font-semibold text-ink">
         Closing this week <span className="label-mono ml-2">{soon.length} tenders</span>
       </h2>
-      <ul className="mt-4 divide-y divide-border">
+      <ul className="mt-3 divide-y divide-border">
         {soon.map(({ lead, days }, i) => {
           const buyer =
             lead.companies.find((c) => c.role !== "financier")?.name ?? lead.primary_company;
-          const contact = lead.contacts[0];
           return (
-            <li key={`${lead.doc_id}-${i}`} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2 text-sm">
-              <span className="w-24 shrink-0 font-mono text-xs font-semibold text-signal">
+            <li
+              key={`${lead.doc_id}-${i}`}
+              className="grid grid-cols-[5.5rem_6rem_minmax(0,1fr)_auto] items-baseline gap-x-3 py-1.5 text-sm"
+            >
+              <span className="font-mono text-xs font-semibold text-signal">
                 {days === 0 ? "TODAY" : `${days}D · ${lead.offer_expires?.slice(5)}`}
               </span>
-              <span className="label-mono w-24 shrink-0">{lead.country}</span>
-              <span className="min-w-0 flex-1 text-ink">
-                <span className="font-medium">{buyer}</span>
-                {" — "}
-                {(lead.source_title ?? lead.project_name).split(": ").slice(-1)[0]}
+              <span className="label-mono truncate">{lead.country}</span>
+              <span className="min-w-0 line-clamp-2 text-ink" title={`${buyer} — ${lead.source_title ?? lead.project_name}`}>
+                {lead.source_title ?? lead.project_name}
+                <span className="text-muted-foreground"> · {buyer}</span>
               </span>
-              {contact?.email ? (
-                <a href={`mailto:${contact.email}`} className="text-signal underline underline-offset-2">
-                  {contact.name}
-                </a>
-              ) : null}
               {lead.source_url ? (
                 <a href={lead.source_url} target="_blank" rel="noreferrer" className="label-mono text-signal">
                   Source ↗
                 </a>
-              ) : null}
+              ) : <span />}
             </li>
           );
         })}
