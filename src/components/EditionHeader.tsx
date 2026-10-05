@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 
-import { SubscribeForm } from "@/components/SubscribeForm";
 
 export function SiteHeader() {
   return (
@@ -35,15 +34,14 @@ export function SiteHeader() {
 export function SiteFooter() {
   return (
     <>
-    <SubscribeForm />
     <footer className="mt-16 border-t border-border">
       <div className="mx-auto max-w-5xl px-5 py-8 text-xs leading-relaxed text-muted-foreground">
         <p className="label-mono mb-2">GMTI Capital · Global Motor Trade International</p>
         <p>
-          Unit counts marked <span className="font-mono not-italic">est.</span> are modelled from
-          project capex using GMTI&apos;s sector coefficients, not stated by the source. Every
-          company, contact and figure carries the source span it was extracted from; anything that
-          could not be grounded in the source text was dropped before publication.
+          Leads are open public vehicle tenders from TED (EU) and World Bank procurement notices,
+          with buyer contacts as published in each notice. Headlines are machine-translated to
+          English; vehicle specs are taken only from what the notice states. Market news is
+          screened for relevance to vehicle sales.
         </p>
         <p className="mt-3">
           Editions are rebuilt and published automatically every Monday at 08:00 New York time
