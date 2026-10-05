@@ -191,8 +191,11 @@ export const bandColor = (band?: string) => {
 
 /** Days from today until a tender deadline (negative once passed). */
 export const daysUntil = (iso?: string | null): number | null => {
+  // Whole calendar days between today and the deadline date (0 = closes today).
   if (!iso) return null;
-  const end = new Date(`${iso}T23:59:59`);
-  if (Number.isNaN(end.getTime())) return null;
-  return Math.ceil((end.getTime() - Date.now()) / 86_400_000);
+  const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
+  if (!y || !m || !d) return null;
+  const now = new Date();
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.round((Date.UTC(y, m - 1, d) - today) / 86_400_000);
 };
