@@ -29,7 +29,7 @@ function ClosingSoon({ edition }: { edition: EditionPayload }) {
           return (
             <li
               key={`${lead.doc_id}-${i}`}
-              className="grid grid-cols-[5.5rem_6rem_minmax(0,1fr)_auto] items-baseline gap-x-3 py-1.5 text-sm"
+              className="grid grid-cols-[5.5rem_6rem_minmax(0,1fr)_auto_auto] items-baseline gap-x-3 py-1.5 text-sm"
             >
               <span className="font-mono text-xs font-semibold text-signal">
                 {days === 0 ? "TODAY" : `${days}D · ${lead.offer_expires?.slice(5)}`}
@@ -38,6 +38,12 @@ function ClosingSoon({ edition }: { edition: EditionPayload }) {
               <span className="min-w-0 line-clamp-2 text-ink" title={`${buyer} — ${lead.source_title ?? lead.project_name}`}>
                 {lead.source_title ?? lead.project_name}
                 <span className="text-muted-foreground"> · {buyer}</span>
+              </span>
+              <span
+                className="max-w-[16rem] truncate select-all font-mono text-xs text-ink"
+                title={lead.contacts[0]?.email ?? ""}
+              >
+                {lead.contacts[0]?.email ?? ""}
               </span>
               {lead.source_url ? (
                 <a href={lead.source_url} target="_blank" rel="noreferrer" className="label-mono text-signal">
