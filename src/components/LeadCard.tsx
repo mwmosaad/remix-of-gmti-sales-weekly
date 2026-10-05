@@ -13,6 +13,25 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
   const modelled = lead.vehicle_lines.some((line) => line.basis === "modelled");
   const counterpartyLabel = buyer?.name ?? lead.primary_company ?? "Unnamed counterparty";
   const daysLeft = daysUntil(lead.offer_expires);
+  // For tenders the official category ('Fire engines', 'Electric buses') sits
+  // between the dashes in the title; the pipeline's sector guess was wrong
+  // ('Rail & corridor construction' on a city van tender).
+  const titleParts = (lead.source_title_original || lead.source_title || "").split(" – ");
+  const category =
+    lead.stage === "procurement" && titleParts.length >= 3
+      ? titleParts[1]
+      : (lead.project_type_label ?? "Unclassified");
+  const norm = (t?: string) => (t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+  const redundantSubtitle =
+    !lead.source_title ||
+    norm(lead.source_title).includes(norm(lead.project_name).slice(0, 60)) ||
+    norm(lead.source_title_original).includes(norm(lead.project_name).slice(0, 60));
+  const hasCapex = Boolean(capex) && !/^\$0(\.0)?m$/i.test(capex ?? "");
+  const unitsNow = lead.units_now ?? 0;
+  const units12 = lead.units_next_12m ?? 0;
+  const liveLines = lead.vehicle_lines.filter(
+    (l) => (l.units_now ?? 0) > 0 || (l.units_next_12m ?? 0) > 0,
+  );
   const urgent = daysLeft !== null && daysLeft <= 7;
 
   return (
@@ -25,7 +44,7 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
           BAND {lead.band ?? "—"}
         </span>
         <span className="label-mono">{lead.country ?? "Region-wide"}</span>
-        <span className="label-mono">· {lead.project_type_label ?? "Unclassified"}</span>
+        <span className="label-mono">· {category}</span>
         <span className="label-mono">· {stageLabel(lead.stage)}</span>
         {lead.published ? <span className="label-mono">· {lead.published}</span> : null}
         {lead.offer_expires ? (
@@ -69,7 +88,7 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
               Original: {lead.source_title_original}
             </p>
           ) : null}
-          {lead.source_title ? (
+          {!redundantSubtitle ? (
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               {lead.project_name}
             </p>
@@ -77,36 +96,38 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
         </>
       )}
 
-      <dl className="mt-4 grid grid-cols-2 gap-4 border-t border-border pt-4 sm:grid-cols-4">
+      <dl className="mt-4 flex flex-wrap gap-x-10 gap-y-3 border-t border-border pt-4">
+        {hasCapex ? (
+          <div>
+            <dt className="label-mono">Value</dt>
+            <dd className="font-display text-lg font-semibold text-ink">{capex}</dd>
+          </div>
+        ) : null}
+        {unitsNow > 0 ? (
+          <div>
+            <dt className="label-mono">Units now {modelled ? "(est.)" : ""}</dt>
+            <dd className="font-display text-lg font-semibold text-ink">{formatUnits(unitsNow)}</dd>
+          </div>
+        ) : null}
+        {units12 > 0 ? (
+          <div>
+            <dt className="label-mono">Units 12m {modelled ? "(est.)" : ""}</dt>
+            <dd className="font-display text-lg font-semibold text-ink">{formatUnits(units12)}</dd>
+          </div>
+        ) : null}
         <div>
-          <dt className="label-mono">Capex</dt>
-          <dd className="font-display text-lg font-semibold text-ink">{capex ?? "Not disclosed"}</dd>
-        </div>
-        <div>
-          <dt className="label-mono">Units now {modelled ? "(est.)" : ""}</dt>
-          <dd className="font-display text-lg font-semibold text-ink">
-            {formatUnits(lead.units_now)}
-          </dd>
-        </div>
-        <div>
-          <dt className="label-mono">Units 12m {modelled ? "(est.)" : ""}</dt>
-          <dd className="font-display text-lg font-semibold text-ink">
-            {formatUnits(lead.units_next_12m)}
-          </dd>
-        </div>
-        <div>
-          <dt className="label-mono">Counterparty</dt>
+          <dt className="label-mono">Buyer</dt>
           <dd className="text-sm font-medium text-ink">
             {buyer?.name ?? lead.primary_company ?? "Not named in source"}
           </dd>
         </div>
       </dl>
 
-      {lead.vehicle_lines.length > 0 ? (
+      {liveLines.length > 0 ? (
         <div className="mt-4">
           <p className="label-mono mb-2">Indicative fleet requirement</p>
           <ul className="space-y-1 text-sm text-muted-foreground">
-            {lead.vehicle_lines.map((line) => (
+            {liveLines.map((line) => (
               <li key={line.vehicle_class} className="flex justify-between gap-4">
                 <span>{line.label}</span>
                 <span className="shrink-0 font-mono text-xs text-ink">

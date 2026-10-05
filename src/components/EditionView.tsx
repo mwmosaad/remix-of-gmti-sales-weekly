@@ -71,9 +71,25 @@ function StatBlock({ value, label, accent }: { value: string; label: string; acc
 }
 
 export function EditionView({ edition }: { edition: EditionPayload }) {
-  const totals = editionTotals(edition);
-  const regions = edition.regions.filter(
-    (region) => region.leads.length > 0 || region.macro_lines.length > 0,
+  // Only actionable content: drop closed tenders, then drop regions that
+  // have neither live leads nor market news.
+  const live: EditionPayload = {
+    ...edition,
+    regions: edition.regions.map((region) => ({
+      ...region,
+      leads: region.leads.filter((lead) => {
+        const d = daysUntil(lead.offer_expires);
+        return d === null || d >= 0;
+      }),
+    })),
+  };
+  const totals = editionTotals(live);
+  const closingWeek = allLeads(live).filter((l) => {
+    const d = daysUntil(l.offer_expires);
+    return d !== null && d >= 0 && d <= 7;
+  }).length;
+  const regions = live.regions.filter(
+    (region) => region.leads.length > 0 || region.market_notes.length > 0,
   );
 
   return (
@@ -83,7 +99,7 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
         Fleet Intelligence
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Industrial project pipeline and the economics moving it, week ending{" "}
+        Open vehicle tenders and fleet market news, week ending{" "}
         {formatWeek(edition.week_ending)}
       </p>
       <p className="label-mono mt-2">
@@ -93,44 +109,27 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
       <div className="rule-heavy mt-6" />
 
 
-      <div className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-5">
-        <StatBlock value={String(totals.leads)} label="Leads carried" />
-        <StatBlock value={String(totals.priority)} label="Act now (≤21d)" accent />
-        <StatBlock value={formatUsdM(totals.capexUsdM)} label="Capex tracked" />
-        <StatBlock value={formatUnits(totals.unitsNow)} label="Units now" />
-        <StatBlock value={formatUnits(totals.unitsNext12m)} label="Units 12m" />
+      <div className="mt-6 grid grid-cols-3 gap-6">
+        <StatBlock value={String(totals.leads)} label="Open leads" />
+        <StatBlock value={String(closingWeek)} label="Closing ≤7 days" accent />
+        <StatBlock value={String(totals.priority)} label="Act now (≤21d)" />
       </div>
 
-      <p className="mt-6 border-l-2 border-signal pl-4 text-sm leading-relaxed text-muted-foreground">
-        Counts marked <span className="font-mono">est.</span> are modelled from project capex using
-        GMTI&apos;s sector coefficients — an ordering signal for the sales team, not a forecast.
-        {edition.stats.extractor ? ` Extractor: ${edition.stats.extractor}.` : ""}
-        {edition.stats.docs_ingested
-          ? ` ${edition.stats.docs_ingested} documents ingested, ${edition.stats.docs_relevant ?? 0} relevant.`
-          : ""}
-      </p>
 
-      <ClosingSoon edition={edition} />
+
+      <ClosingSoon edition={live} />
 
       {regions.map((region) => (
         <section key={region.key} className="mt-14 scroll-mt-20" id={region.key}>
           <div className="flex flex-wrap items-baseline justify-between gap-2 border-b-2 border-ink pb-2">
             <h2 className="font-display text-2xl font-semibold text-ink">{region.label}</h2>
-            <span className="label-mono">
-              {region.leads.length} leads ·{" "}
-              {formatUsdM(region.pipeline_usd_m ?? 0)} pipeline · {region.docs_scanned ?? 0} docs
-              scanned
-            </span>
+            <span className="label-mono">{region.leads.length} open leads</span>
           </div>
 
-          {region.macro_lines.map((line, index) => (
-            <p key={index} className="mt-4 text-sm leading-relaxed text-ink">
-              {line}
-            </p>
-          ))}
 
           {region.market_notes.length > 0 ? (
             <ul className="mt-4 space-y-1">
+              <li className="label-mono mb-1">Market news</li>
               {region.market_notes.map((note, index) => (
                 <li key={index} className="text-sm text-muted-foreground">
                   {note.url ? (
@@ -164,11 +163,7 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
                 />
               ));
             })()}
-            {region.leads.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No grounded project events this week — macro backdrop only.
-              </p>
-            ) : null}
+
           </div>
         </section>
       ))}
