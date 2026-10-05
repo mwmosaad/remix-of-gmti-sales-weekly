@@ -46,6 +46,7 @@ export interface Lead {
   vehicle_lines: VehicleLine[];
   stated_vehicle_notes?: string[];
   equipment_models?: string[];
+  vehicle_spec?: string;
   source_title_original?: string;
   offer_expires?: string | null;
   source_url?: string;

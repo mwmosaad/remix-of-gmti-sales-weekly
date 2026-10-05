@@ -26,6 +26,12 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
     !lead.source_title ||
     norm(lead.source_title).includes(norm(lead.project_name).slice(0, 60)) ||
     norm(lead.source_title_original).includes(norm(lead.project_name).slice(0, 60));
+  const model =
+    lead.equipment_models && lead.equipment_models.length > 0
+      ? lead.equipment_models.join(", ")
+      : lead.vehicle_spec || "";
+  const lead_contact = lead.contacts[0];
+  const otherContacts = lead.contacts.slice(1);
   const hasCapex = Boolean(capex) && !/^\$0(\.0)?m$/i.test(capex ?? "");
   const unitsNow = lead.units_now ?? 0;
   const units12 = lead.units_next_12m ?? 0;
@@ -96,11 +102,35 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
         </>
       )}
 
+      {lead_contact ? (
+        <p className="mt-2 text-sm text-ink">
+          <span className="label-mono mr-2">Contact</span>
+          <span className="font-medium">{lead_contact.name}</span>
+          {lead_contact.email ? (
+            <>
+              {" · "}
+              <a
+                href={`mailto:${lead_contact.email}`}
+                className="text-signal underline underline-offset-2"
+              >
+                {lead_contact.email}
+              </a>
+            </>
+          ) : null}
+        </p>
+      ) : null}
+
       <dl className="mt-4 flex flex-wrap gap-x-10 gap-y-3 border-t border-border pt-4">
         {hasCapex ? (
           <div>
             <dt className="label-mono">Value</dt>
             <dd className="font-display text-lg font-semibold text-ink">{capex}</dd>
+          </div>
+        ) : null}
+        {model ? (
+          <div>
+            <dt className="label-mono">Model</dt>
+            <dd className="text-sm font-medium text-ink">{model}</dd>
           </div>
         ) : null}
         {unitsNow > 0 ? (
@@ -140,18 +170,13 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
         </div>
       ) : null}
 
-      {lead.equipment_models && lead.equipment_models.length > 0 ? (
-        <div className="mt-4 border-t border-border pt-4">
-          <p className="label-mono mb-2">Models mentioned</p>
-          <p className="text-sm text-ink">{lead.equipment_models.join(", ")}</p>
-        </div>
-      ) : null}
 
-      {lead.contacts.length > 0 ? (
+
+      {otherContacts.length > 0 ? (
         <div className="mt-4 border-t border-border pt-4">
-          <p className="label-mono mb-2">Named contacts</p>
+          <p className="label-mono mb-2">Other contacts</p>
           <ul className="space-y-1 text-sm">
-            {lead.contacts.map((contact, index) => (
+            {otherContacts.map((contact, index) => (
               <li key={`${contact.name}-${index}`} className="text-ink">
                 <span className="font-medium">{contact.name}</span>
                 {contact.title ? (
