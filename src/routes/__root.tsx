@@ -13,6 +13,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
+const DESC =
+  "Open public vehicle tenders with buyer contacts and bid deadlines, plus regional fleet market news. Updated every Monday.";
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -79,20 +81,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "GMTI Fleet Intelligence" },
-      {
-        name: "description",
-        content:
-          "Weekly industrial project pipeline and fleet demand brief for the GMTI sales team.",
-      },
+      { name: "description", content: DESC },
       { name: "author", content: "GMTI — Global Motor Trade International" },
       { property: "og:title", content: "GMTI Fleet Intelligence" },
-      {
-        property: "og:description",
-        content:
-          "Weekly industrial project pipeline and fleet demand brief for the GMTI sales team.",
-      },
+      { property: "og:description", content: DESC },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "GMTI Fleet Intelligence" },
+      { name: "twitter:description", content: DESC },
     ],
     links: [
       {
@@ -105,7 +101,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Montserrat:wght@400;500;600&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" },
+      { rel: "icon", type: "image/png", sizes: "512x512", href: "/favicon-512.png" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
     ],
   }),
   shellComponent: RootShell,

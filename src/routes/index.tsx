@@ -9,18 +9,14 @@ import { seedEdition } from "@/lib/seed-edition";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "GMTI Fleet Intelligence — This week's edition" },
-      {
-        name: "description",
-        content:
-          "This week's GMTI Fleet Intelligence brief: industrial project leads, named contacts, capex and indicative fleet requirement across nine regions.",
-      },
-      { property: "og:title", content: "GMTI Fleet Intelligence — This week's edition" },
-      {
-        property: "og:description",
-        content:
-          "Industrial project leads, named contacts, capex and indicative fleet requirement across nine regions.",
-      },
+      { title: "GMTI Fleet Intelligence" },
+      { name: "description", content: "Open public vehicle tenders with buyer contacts and bid deadlines, plus regional fleet market news. Updated every Monday." },
+      { property: "og:title", content: "GMTI Fleet Intelligence" },
+      { property: "og:description", content: "Open public vehicle tenders with buyer contacts and bid deadlines, plus regional fleet market news. Updated every Monday." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "GMTI Fleet Intelligence" },
+      { name: "twitter:description", content: "Open public vehicle tenders with buyer contacts and bid deadlines, plus regional fleet market news. Updated every Monday." },
     ],
   }),
   loader: async () => {

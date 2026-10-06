@@ -7,18 +7,16 @@ import { formatWeek, type EditionPayload } from "@/lib/edition";
 import { seedEdition } from "@/lib/seed-edition";
 
 export const Route = createFileRoute("/editions/$week")({
-  head: ({ params }) => ({
+  head: () => ({
     meta: [
-      { title: `Week ending ${params.week} — GMTI Fleet Intelligence` },
-      {
-        name: "description",
-        content: `GMTI Fleet Intelligence edition for the week ending ${params.week}: project leads, contacts, capex and fleet requirement by region.`,
-      },
-      { property: "og:title", content: `Week ending ${params.week} — GMTI Fleet Intelligence` },
-      {
-        property: "og:description",
-        content: `Project leads, contacts, capex and fleet requirement by region for the week ending ${params.week}.`,
-      },
+      { title: "GMTI Fleet Intelligence" },
+      { name: "description", content: "Open public vehicle tenders with buyer contacts and bid deadlines, plus regional fleet market news. Updated every Monday." },
+      { property: "og:title", content: "GMTI Fleet Intelligence" },
+      { property: "og:description", content: "Open public vehicle tenders with buyer contacts and bid deadlines, plus regional fleet market news. Updated every Monday." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "GMTI Fleet Intelligence" },
+      { name: "twitter:description", content: "Open public vehicle tenders with buyer contacts and bid deadlines, plus regional fleet market news. Updated every Monday." },
     ],
   }),
   loader: async ({ params }): Promise<{ edition: EditionPayload }> => {
