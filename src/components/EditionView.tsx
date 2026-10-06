@@ -23,7 +23,7 @@ function ClosingSoon({ edition }: { edition: EditionPayload }) {
         Closing this week <span className="label-mono ml-2">{soon.length} tenders</span>
       </h2>
       <ul className="mt-3 divide-y divide-border">
-        {soon.map(({ lead, days }, i) => {
+        {soon.slice(0, 20).map(({ lead, days }, i) => {
           const buyer =
             lead.companies.find((c) => c.role !== "financier")?.name ?? lead.primary_company;
           return (
@@ -57,6 +57,9 @@ function ClosingSoon({ edition }: { edition: EditionPayload }) {
           );
         })}
       </ul>
+      {soon.length > 20 ? (
+        <p className="label-mono mt-2">+{soon.length - 20} more close this week</p>
+      ) : null}
     </section>
   );
 }
@@ -117,7 +120,10 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
       <div className="mt-6 grid grid-cols-3 gap-6">
         <StatBlock value={String(totals.leads)} label="Open leads" />
         <StatBlock value={String(closingWeek)} label="Closing ≤7 days" accent />
-        <StatBlock value={String(totals.priority)} label="Act now (≤21d)" />
+        <StatBlock
+          value={String(allLeads(live).filter((l) => l.band === "B").length)}
+          label="Closing next week"
+        />
       </div>
 
 
