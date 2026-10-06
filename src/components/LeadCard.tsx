@@ -203,7 +203,7 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
           <a
             href={lead.source_url}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className="label-mono text-signal hover:underline"
           >
             Source ↗
