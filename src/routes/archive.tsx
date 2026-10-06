@@ -14,17 +14,14 @@ interface ArchiveRow {
 export const Route = createFileRoute("/archive")({
   head: () => ({
     meta: [
-      { title: "Edition archive — GMTI Fleet Intelligence" },
-      {
-        name: "description",
-        content:
-          "Every past weekly GMTI Fleet Intelligence edition, with lead counts and coverage stats for each week.",
-      },
-      { property: "og:title", content: "Edition archive — GMTI Fleet Intelligence" },
-      {
-        property: "og:description",
-        content: "Every past weekly GMTI Fleet Intelligence edition, week by week.",
-      },
+      { title: "GMTI Fleet Intelligence" },
+      { name: "description", content: "Open public vehicle tenders with buyer contacts and bid deadlines, plus regional fleet market news. Updated every Monday." },
+      { property: "og:title", content: "GMTI Fleet Intelligence" },
+      { property: "og:description", content: "Open public vehicle tenders with buyer contacts and bid deadlines, plus regional fleet market news. Updated every Monday." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "GMTI Fleet Intelligence" },
+      { name: "twitter:description", content: "Open public vehicle tenders with buyer contacts and bid deadlines, plus regional fleet market news. Updated every Monday." },
     ],
   }),
   loader: async () => {
