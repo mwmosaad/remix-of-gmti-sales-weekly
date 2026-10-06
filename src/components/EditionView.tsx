@@ -49,7 +49,7 @@ function ClosingSoon({ edition }: { edition: EditionPayload }) {
                 </a>
               ) : <span />}
               {lead.source_url ? (
-                <a href={lead.source_url} target="_blank" rel="noreferrer" className="label-mono text-signal">
+                <a href={lead.source_url} target="_blank" rel="noopener noreferrer" className="label-mono text-signal">
                   Source ↗
                 </a>
               ) : <span />}
@@ -141,7 +141,7 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
                     <a
                       href={note.url}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                       className="text-signal hover:underline"
                     >
                       {note.title} ↗
