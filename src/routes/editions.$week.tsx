@@ -7,7 +7,7 @@ import { formatWeek, type EditionPayload } from "@/lib/edition";
 import { seedEdition } from "@/lib/seed-edition";
 
 export const Route = createFileRoute("/editions/$week")({
-  head: ({ params }) => ({
+  head: () => ({
     meta: [
       { title: "GMTI Fleet Intelligence" },
       { name: "description", content: "Open public vehicle tenders with buyer contacts and bid deadlines, plus regional fleet market news. Updated every Monday." },
