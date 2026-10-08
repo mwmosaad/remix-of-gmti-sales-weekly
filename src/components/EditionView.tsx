@@ -97,9 +97,10 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
     const d = daysUntil(l.offer_expires);
     return d !== null && d >= 0 && d <= 7;
   }).length;
-  const regions = live.regions.filter(
-    (region) => region.leads.length > 0 || region.market_notes.length > 0,
-  );
+  const regions = live.regions
+    .filter((region) => region.leads.length > 0 || region.market_notes.length > 0)
+    .slice()
+    .sort((a, b) => b.leads.length - a.leads.length);
 
   return (
     <>
