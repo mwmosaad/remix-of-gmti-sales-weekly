@@ -153,7 +153,7 @@ export const PUBLISH_CADENCE: "daily" | "weekly" = "daily";
 export const nextDailyUpdate = (editionIso: string) => {
   const next = new Date(`${editionIso}T00:00:00Z`);
   next.setUTCDate(next.getUTCDate() + 1);
-  return `${WEEKDAYS[next.getUTCDay()].slice(0, 3)} ${next.getUTCDate()} ${MONTHS[next.getUTCMonth()]}`;
+  return `${(WEEKDAYS[next.getUTCDay()] ?? "").slice(0, 3)} ${next.getUTCDate()} ${MONTHS[next.getUTCMonth()]}`;
 };
 
 
