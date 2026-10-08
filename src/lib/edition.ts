@@ -146,6 +146,17 @@ export const nextPublication = (weekEndingIso: string) => {
   return `${WEEKDAYS[next.getUTCDay()]} ${day} ${MONTHS[next.getUTCMonth()]}`;
 };
 
+/** Controls header/footer wording. Allowed: "daily" | "weekly". */
+export const PUBLISH_CADENCE: "daily" | "weekly" = "daily";
+
+/** The next daily 08:00 New York update after an edition date, e.g. "Thu 9 Oct". */
+export const nextDailyUpdate = (editionIso: string) => {
+  const next = new Date(`${editionIso}T00:00:00Z`);
+  next.setUTCDate(next.getUTCDate() + 1);
+  return `${(WEEKDAYS[next.getUTCDay()] ?? "").slice(0, 3)} ${next.getUTCDate()} ${MONTHS[next.getUTCMonth()]}`;
+};
+
+
 
 
 

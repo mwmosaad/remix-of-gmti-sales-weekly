@@ -8,6 +8,8 @@ import {
   formatUsdM,
   formatWeek,
   nextPublication,
+  nextDailyUpdate,
+  PUBLISH_CADENCE,
   type EditionPayload,
 } from "@/lib/edition";
 
@@ -116,11 +118,13 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
         Fleet Intelligence
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Open vehicle tenders and fleet market news, week ending{" "}
-        {formatWeek(edition.week_ending)}
+        Open vehicle tenders and fleet market news,{" "}
+        {PUBLISH_CADENCE === "daily" ? "updated" : "week ending"} {formatWeek(edition.week_ending)}
       </p>
       <p className="label-mono mt-2">
-        Latest published edition · next run {nextPublication(edition.week_ending)}, 08:00 New York
+        {PUBLISH_CADENCE === "daily"
+          ? `Updated daily · next update ${nextDailyUpdate(edition.week_ending)}, 08:00 New York`
+          : `Latest published edition · next run ${nextPublication(edition.week_ending)}, 08:00 New York`}
       </p>
 
       <div className="rule-heavy mt-6" />
