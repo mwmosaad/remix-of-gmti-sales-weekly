@@ -153,7 +153,25 @@ export const PUBLISH_CADENCE: "daily" | "weekly" = "daily";
 export const nextDailyUpdate = (editionIso: string) => {
   const next = new Date(`${editionIso}T00:00:00Z`);
   next.setUTCDate(next.getUTCDate() + 1);
-  return `${(WEEKDAYS[next.getUTCDay()] ?? "").slice(0, 3)} ${next.getUTCDate()} ${MONTHS[next.getUTCMonth()]}`;
+  return `${(WEEKDAYS[next.getUTCDay()] ?? "").slice(0, 3)} ${next.getUTCMonth() + 1}/${next.getUTCDate()}/${next.getUTCFullYear()}`;
+};
+
+/** Edition date as M/D/YYYY, e.g. "10/8/2026". */
+export const formatMdy = (iso: string) => {
+  const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
+  return `${m}/${d}/${y}`;
+};
+
+/** A timestamp as 12-hour New York time, e.g. "8:04 AM". */
+export const formatNyTime = (iso: string) => {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).formatToParts(new Date(iso));
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+  return `${get("hour")}:${get("minute")} ${get("dayPeriod").toUpperCase()}`;
 };
 
 
