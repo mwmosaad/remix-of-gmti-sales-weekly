@@ -9,6 +9,8 @@ import {
   formatWeek,
   nextPublication,
   nextDailyUpdate,
+  formatMdy,
+  formatNyTime,
   PUBLISH_CADENCE,
   type EditionPayload,
 } from "@/lib/edition";
@@ -119,11 +121,17 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
         Open vehicle tenders and fleet market news,{" "}
-        {PUBLISH_CADENCE === "daily" ? "updated" : "week ending"} {formatWeek(edition.week_ending)}
+        {PUBLISH_CADENCE === "daily" ? (
+          <span className="font-semibold italic text-signal">
+            updated {formatMdy(edition.week_ending)} at {formatNyTime(edition.generated_at)} ET
+          </span>
+        ) : (
+          <>week ending {formatWeek(edition.week_ending)}</>
+        )}
       </p>
       <p className="label-mono mt-2">
         {PUBLISH_CADENCE === "daily"
-          ? `Updated daily · next update ${nextDailyUpdate(edition.week_ending)}, 08:00 New York`
+          ? `Updated daily · next update ${nextDailyUpdate(edition.week_ending)}, 8:00 AM ET`
           : `Latest published edition · next run ${nextPublication(edition.week_ending)}, 08:00 New York`}
       </p>
 
