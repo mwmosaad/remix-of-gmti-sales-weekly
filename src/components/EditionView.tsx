@@ -1,4 +1,5 @@
 import { LeadCard } from "@/components/LeadCard";
+import { RegionNav } from "@/components/RegionNav";
 import {
   allLeads,
   daysUntil,
@@ -18,7 +19,7 @@ function ClosingSoon({ edition }: { edition: EditionPayload }) {
     .sort((a, b) => (a.days ?? 0) - (b.days ?? 0));
   if (soon.length === 0) return null;
   return (
-    <section className="mt-10 border-2 border-signal bg-card p-5" id="closing-soon">
+    <section className="mt-10 scroll-mt-16 border-2 border-signal bg-card p-5" id="closing-soon">
       <h2 className="font-display text-xl font-semibold text-ink">
         Closing this week <span className="label-mono ml-2">{soon.length} tenders</span>
       </h2>
@@ -101,6 +102,13 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
   );
 
   return (
+    <>
+    <RegionNav
+      items={[
+        { id: "closing-soon", label: "Closing this week" },
+        ...regions.map((r) => ({ id: r.key, label: r.label, count: r.leads.length })),
+      ]}
+    />
     <div className="mx-auto max-w-5xl px-5 py-10">
       <p className="label-mono">GMTI Capital · Global Motor Trade International</p>
       <h1 className="mt-3 font-display text-4xl font-bold text-ink sm:text-5xl">
@@ -131,7 +139,7 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
       <ClosingSoon edition={live} />
 
       {regions.map((region) => (
-        <section key={region.key} className="mt-14 scroll-mt-20" id={region.key}>
+        <section key={region.key} className="mt-14 scroll-mt-16" id={region.key}>
           <div className="flex flex-wrap items-baseline justify-between gap-2 border-b-2 border-ink pb-2">
             <h2 className="font-display text-2xl font-semibold text-ink">{region.label}</h2>
             <span className="label-mono">{region.leads.length} open leads</span>
@@ -179,5 +187,6 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
         </section>
       ))}
     </div>
+    </>
   );
 }
