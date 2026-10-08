@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { PUBLISH_CADENCE } from "@/lib/edition";
 
 
 export function SiteHeader() {
@@ -44,7 +45,8 @@ export function SiteFooter() {
           screened for relevance to vehicle sales.
         </p>
         <p className="mt-3">
-          Editions are rebuilt and published automatically every Monday at 08:00 New York time
+          Editions are rebuilt and published automatically{" "}
+          {PUBLISH_CADENCE === "daily" ? "every day" : "every Monday"} at 08:00 New York time
           (EST/EDT) from the fleet-intelligence pipeline.
         </p>
       </div>
