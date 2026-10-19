@@ -69,6 +69,85 @@ function ClosingSoon({ edition }: { edition: EditionPayload }) {
   );
 }
 
+const OUTSIDE_EUROPE_ORDER = [
+  "latin_america",
+  "east_africa",
+  "west_africa",
+  "north_africa",
+  "middle_east",
+  "south_asia",
+  "central_asia",
+  "southeast_asia",
+  "caribbean",
+];
+
+function OutsideEurope({ edition }: { edition: EditionPayload }) {
+  const regions = edition.regions
+    .filter((r) => r.key !== "western_europe" && r.key !== "eastern_europe" && r.leads.length > 0)
+    .slice()
+    .sort((a, b) => {
+      const ia = OUTSIDE_EUROPE_ORDER.indexOf(a.key);
+      const ib = OUTSIDE_EUROPE_ORDER.indexOf(b.key);
+      return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+    });
+  const total = regions.reduce((s, r) => s + r.leads.length, 0);
+  if (total === 0) return null;
+  return (
+    <section className="mt-10 scroll-mt-16 border-2 border-ink bg-card p-5" id="outside-europe">
+      <h2 className="font-display text-xl font-semibold text-ink">
+        Outside Europe <span className="label-mono ml-2">{total} tenders</span>
+      </h2>
+      {regions.map((region) => {
+        const rows = region.leads
+          .map((lead) => ({ lead, days: daysUntil(lead.offer_expires) }))
+          .sort((a, b) => (a.days ?? Infinity) - (b.days ?? Infinity));
+        return (
+          <div key={region.key} className="mt-4">
+            <h3 className="label-mono text-ink">
+              {region.label} · {rows.length}
+            </h3>
+            <ul className="mt-1 divide-y divide-border">
+              {rows.map(({ lead, days }, i) => {
+                const buyer =
+                  lead.companies.find((c) => c.role !== "financier")?.name ?? lead.primary_company;
+                return (
+                  <li
+                    key={`${lead.doc_id}-${i}`}
+                    className="grid grid-cols-[5.5rem_6rem_minmax(0,1fr)_auto_auto] items-baseline gap-x-3 py-1.5 text-sm"
+                  >
+                    <span className="font-mono text-xs font-semibold text-signal">
+                      {days === null ? "—" : days === 0 ? "TODAY" : `${days}D · ${lead.offer_expires?.slice(5)}`}
+                    </span>
+                    <span className="label-mono truncate">{lead.country}</span>
+                    <span className="min-w-0 line-clamp-2 text-ink" title={`${buyer} — ${lead.source_title ?? lead.project_name}`}>
+                      {lead.source_title ?? lead.project_name}
+                      <span className="text-muted-foreground"> · {buyer}</span>
+                    </span>
+                    {lead.contacts[0]?.email ? (
+                      <a
+                        href={`mailto:${lead.contacts[0].email}`}
+                        className="max-w-[16rem] truncate font-mono text-xs text-signal underline underline-offset-2"
+                        title={lead.contacts[0].email}
+                      >
+                        {lead.contacts[0].email}
+                      </a>
+                    ) : <span />}
+                    {lead.source_url ? (
+                      <a href={lead.source_url} target="_blank" rel="noopener noreferrer" className="label-mono text-signal">
+                        Source ↗
+                      </a>
+                    ) : <span />}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      })}
+    </section>
+  );
+}
+
 function StatBlock({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
   return (
     <div>
@@ -111,6 +190,7 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
     <RegionNav
       items={[
         { id: "closing-soon", label: "Closing this week" },
+        { id: "outside-europe", label: "Outside Europe" },
         ...regions.map((r) => ({ id: r.key, label: r.label, count: r.leads.length })),
       ]}
     />
@@ -150,6 +230,8 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
 
 
       <ClosingSoon edition={live} />
+
+      <OutsideEurope edition={live} />
 
       {regions.map((region) => (
         <section key={region.key} className="mt-14 scroll-mt-16" id={region.key}>
