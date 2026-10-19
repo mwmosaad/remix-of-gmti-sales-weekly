@@ -73,6 +73,8 @@ const OUTSIDE_EUROPE_ORDER = [
   "latin_america",
   "east_africa",
   "west_africa",
+  "central_africa",
+  "southern_africa",
   "north_africa",
   "middle_east",
   "south_asia",
