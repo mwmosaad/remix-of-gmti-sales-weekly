@@ -197,7 +197,7 @@ export function EditionView({ edition }: { edition: EditionPayload }) {
       ]}
     />
     <div className="mx-auto max-w-5xl px-5 py-10">
-      <p className="label-mono">GMTI Capital · Global Motor Trade International</p>
+      <p className="label-mono">GLOBAL MOTOR TRADE INTERNATIONAL</p>
       <h1 className="mt-3 font-display text-4xl font-bold text-ink sm:text-5xl">
         Fleet Intelligence
       </h1>
