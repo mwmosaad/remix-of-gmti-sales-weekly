@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+Keep lead award formatting and closing-week eligibility in the browser-safe edition helpers so card rendering and panel filtering can be tested without changing publication data.

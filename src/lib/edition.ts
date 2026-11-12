@@ -32,6 +32,23 @@ export interface VehicleLine {
   evidence?: string;
 }
 
+export interface Incumbent {
+  source: "ted" | "secop";
+  match: "confirmed" | "name_only";
+  buyer: string;
+  winners: string[];
+  winner_count: number;
+  value: number | null;
+  currency: string | null;
+  value_basis: "notice_total" | "award_value";
+  award_date: string;
+  award_date_source: string;
+  framework: boolean | null;
+  title: string;
+  url: string | null;
+  notice_id: string;
+}
+
 export interface Lead {
   doc_id: string;
   region: string;
@@ -63,6 +80,7 @@ export interface Lead {
   units_next_12m?: number;
   units_beyond_12m?: number;
   primary_company?: string;
+  incumbent?: Incumbent | null;
 }
 
 export interface MarketNote {
@@ -193,6 +211,38 @@ export const formatUnits = (units?: number | null) =>
 
 export const stageLabel = (stage?: string) =>
   (stage ?? "unknown").replace(/_/g, " ");
+
+export const lastAwardDetails = (incumbent?: Incumbent | null) => {
+  if (!incumbent) return null;
+  const winner = incumbent.winners[0] || "winner not published";
+  const parts = [
+    `${winner}${incumbent.winner_count > 1 ? ` +${incumbent.winner_count - 1}` : ""}`,
+  ];
+  if (incumbent.value !== null) {
+    const absolute = Math.abs(incumbent.value);
+    const scale = absolute >= 1e9 ? 1e9 : absolute >= 1e6 ? 1e6 : absolute >= 1e3 ? 1e3 : 1;
+    const suffix = scale === 1e9 ? "B" : scale === 1e6 ? "M" : scale === 1e3 ? "K" : "";
+    const amount = `${Number((incumbent.value / scale).toFixed(1))}${suffix}`;
+    const symbol = incumbent.currency === "EUR" ? "€" : incumbent.currency === "USD" ? "$" : incumbent.currency === "GBP" ? "£" : null;
+    const value = symbol ? `${symbol}${amount}` : `${amount}${incumbent.currency ? ` ${incumbent.currency}` : ""}`;
+    parts.push(`${value}${incumbent.value_basis === "notice_total" ? " (notice total)" : ""}`);
+  }
+  parts.push(new Intl.DateTimeFormat("en-US", {
+    month: "long", year: "numeric", timeZone: "UTC",
+  }).format(new Date(`${incumbent.award_date}T00:00:00Z`)));
+  return {
+    summary: parts.join(" · "),
+    title: incumbent.title.length > 60 ? `${incumbent.title.slice(0, 59)}…` : incumbent.title,
+    url: incumbent.url,
+    matchedByName: incumbent.match === "name_only",
+  };
+};
+
+export const closesThisWeek = (lead: Lead) => {
+  if (lead.stage === "upcoming") return false;
+  const days = daysUntil(lead.offer_expires);
+  return days !== null && days >= 0 && days <= 7;
+};
 
 export const allLeads = (edition: EditionPayload) =>
   edition.regions.flatMap((region) => region.leads);

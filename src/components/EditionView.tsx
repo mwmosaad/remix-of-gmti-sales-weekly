@@ -2,6 +2,7 @@ import { LeadCard } from "@/components/LeadCard";
 import { RegionNav } from "@/components/RegionNav";
 import {
   allLeads,
+  closesThisWeek,
   daysUntil,
   editionTotals,
   formatUnits,
@@ -18,8 +19,8 @@ import {
 
 function ClosingSoon({ edition }: { edition: EditionPayload }) {
   const soon = allLeads(edition)
+    .filter(closesThisWeek)
     .map((lead) => ({ lead, days: daysUntil(lead.offer_expires) }))
-    .filter((x) => x.days !== null && x.days >= 0 && x.days <= 7)
     .sort((a, b) => (a.days ?? 0) - (b.days ?? 0));
   if (soon.length === 0) return null;
   return (

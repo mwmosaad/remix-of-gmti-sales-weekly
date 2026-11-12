@@ -3,6 +3,7 @@ import {
   daysUntil,
   formatCapex,
   formatUnits,
+  lastAwardDetails,
   stageLabel,
   type Lead,
 } from "@/lib/edition";
@@ -39,6 +40,7 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
     (l) => (l.units_now ?? 0) > 0 || (l.units_next_12m ?? 0) > 0,
   );
   const urgent = daysLeft !== null && daysLeft <= 7;
+  const lastAward = lastAwardDetails(lead.incumbent);
 
   return (
     <article className="border border-border bg-card p-5">
@@ -53,7 +55,11 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
         <span className="label-mono">· {category}</span>
         <span className="label-mono">· {stageLabel(lead.stage)}</span>
         {lead.published ? <span className="label-mono">· {lead.published}</span> : null}
-        {lead.offer_expires ? (
+        {lead.stage === "upcoming" ? (
+          <span className="ml-auto border border-border px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-widest text-ink">
+            UPCOMING
+          </span>
+        ) : lead.offer_expires ? (
           <span
             className={`ml-auto px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-widest ${
               urgent ? "text-primary-foreground" : "border border-border text-ink"
@@ -148,6 +154,19 @@ export function LeadCard({ lead, sharesSource = false }: { lead: Lead; sharesSou
           </dd>
         </div>
       </dl>
+
+      {lastAward ? (
+        <p className="mt-2 text-xs text-muted-foreground">
+          Last award: {lastAward.summary} · for {"\""}
+          {lastAward.url ? (
+            <a href={lastAward.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
+              {lastAward.title}
+            </a>
+          ) : lastAward.title}
+          {"\""}
+          {lastAward.matchedByName ? <span> (matched by buyer name)</span> : null}
+        </p>
+      ) : null}
 
       {liveLines.length > 0 ? (
         <div className="mt-4">
